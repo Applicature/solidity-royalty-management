@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
-import './Managed.sol';
-import './Royalty.sol';
+import "./Managed.sol";
+import "./Royalty.sol";
 
 
 contract Cashier is Managed {
@@ -25,7 +25,9 @@ contract Cashier is Managed {
         Royalty royalty = Royalty(
             managementContract.contractRegistry(CONTRACT_ROYALTY)
         );
-        royalty.ownerOf(_digitalAssetId).transfer(msg.value.sub(platformProfit));
+        royalty.ownerOf(_digitalAssetId).transfer(
+            msg.value.sub(platformProfit)
+        );
     }
 
     function forwardEthersToHolder()

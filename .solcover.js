@@ -1,8 +1,14 @@
 module.exports = {
-    skipFiles: ['Migrations.sol'],
+    skipFiles: [
+        'Migrations.sol',
+        'test/CampaignFabricTest.sol',
+        'test/CampaignTest.sol'
+    ],
     // need for dependencies
     copyNodeModules: true,
-    copyPackages: ['zeppelin-solidity', 'minimetoken'],
+    copyPackages: [
+        'zeppelin-solidity'
+    ],
     dir: '.',
     norpc: false
 };

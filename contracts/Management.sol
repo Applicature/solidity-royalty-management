@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
-import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
-import './Constants.sol';
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "./Constants.sol";
 
 contract Management is Ownable, Constants {
 
@@ -28,14 +28,27 @@ contract Management is Ownable, Constants {
     )
         public
     {
-        require(_platformHolderAddress != address(0), ERROR_ZERO_ADDRESS_NOT_ALLOWED);
-        require(isContract(_platformHolderAddress) == false, ERROR_ACCESS_DENIED);
+        require(
+            _platformHolderAddress != address(0),
+            ERROR_ZERO_ADDRESS
+        );
+        require(
+            isContract(_platformHolderAddress) == false,
+            ERROR_ACCESS_DENIED
+        );
         platformHolderAddress = _platformHolderAddress;
         platformRevenueInPercents = _platformRevenueInPercents;
         percentAbsMax = _percentAbsMax;
     }
 
-    function setPermission(address _address, uint256 _permission, bool _value) public onlyOwner {
+    function setPermission(
+        address _address,
+        uint256 _permission,
+        bool _value
+    )
+        public
+        onlyOwner
+    {
         permissions[_address][_permission] = _value;
 
         emit PermissionsSet(_address, _permission, _value);
@@ -66,7 +79,7 @@ contract Management is Ownable, Constants {
     {
         require(
             _newAddress != address(0),
-            ERROR_ZERO_ADDRESS_NOT_ALLOWED
+            ERROR_ZERO_ADDRESS
         );
         platformHolderAddress = _newAddress;
     }

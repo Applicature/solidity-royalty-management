@@ -8,9 +8,7 @@ const BigNumber = require('bignumber.js');
 const abi = require('ethereumjs-abi');
 const BN = require('bn.js');
 
-
 contract('Royalty', function (accounts) {
-
     const platformHolder = accounts[8];
     const platformRevenueInPercents = 10;
     const percentAbsMax = 100;
@@ -20,7 +18,7 @@ contract('Royalty', function (accounts) {
         royalty,
         assetPurchase;
 
-    function makeTransactionKYC(
+    function makeTransactionKYC (
         instance,
         priceInEthers,
         uri,
@@ -29,7 +27,6 @@ contract('Royalty', function (accounts) {
         value,
         senderAddress
     ) {
-
         const h = abi.soliditySHA3(
             [
                 'address',
@@ -63,7 +60,6 @@ contract('Royalty', function (accounts) {
         );
     }
 
-
     beforeEach(async function () {
         management = await Management.new(
             platformHolder,
@@ -88,8 +84,8 @@ contract('Royalty', function (accounts) {
         await management.setPermission(assetPurchase.address, 0, true);
         await management.setPermission(royalty.address, 0, true);
         await management.setPermission(accounts[4], 1, true);
-        let prevSenderBalance = await Utils.getEtherBalance(accounts[0]);
-        let prevPlatformHolderBalance = await Utils.getEtherBalance(platformHolder);
+        const prevSenderBalance = await Utils.getEtherBalance(accounts[0]);
+        const prevPlatformHolderBalance = await Utils.getEtherBalance(platformHolder);
         let txCost;
         await makeTransactionKYC(
             royalty,
@@ -102,15 +98,13 @@ contract('Royalty', function (accounts) {
         )
             .then((result) => Utils.getTxCost(result))
             .then((result) => txCost = result);
-        let afterSenderBalance = await Utils.getEtherBalance(accounts[0]);
-        let afterPlatformHolderBalance = await Utils.getEtherBalance(platformHolder);
-        await Utils.checkState({royalty}, {
+        await Utils.checkState({ royalty }, {
             royalty: {
                 name: 'Royalty',
                 totalSupply: 1,
                 tokenURI: [
-                    {[0]: 'fghjsdfgh'},
-                ]
+                    { 0: 'fghjsdfgh' },
+                ],
             },
         });
 
@@ -124,26 +118,25 @@ contract('Royalty', function (accounts) {
             new BigNumber(prevSenderBalance).sub(txCost).sub(
                 web3.toWei(0.005, 'ether')
             )
-        )
+        );
         await Utils.checkEtherBalance(
             platformHolder,
             new BigNumber(prevPlatformHolderBalance).add(
                 web3.toWei(0.005, 'ether')
             )
-        )
+        );
 
-        const {logs} = await assetPurchase.purchaseDigitalAsset(
+        const { logs } = await assetPurchase.purchaseDigitalAsset(
             0,
             {
-                value: web3.toWei(0.005, 'ether')
+                value: web3.toWei(0.005, 'ether'),
             }
-        )
+        );
         assert.equal(logs.length, 1);
         assert.equal(logs[0].event, 'AssetUsagePurchased');
         const digitalAssetId = logs[0].args.digitalAssetId;
         const buyer = logs[0].args.buyer;
         const amount = logs[0].args.amount;
-        const purchasingTimestamp = logs[0].args.purchasingTimestamp;
         assert.equal(
             digitalAssetId,
             0,
@@ -168,12 +161,8 @@ contract('Royalty', function (accounts) {
 
         await management.setPermission(assetPurchase.address, 0, true);
         await management.setPermission(royalty.address, 0, true);
-        let signerAddress = accounts[4];
-        let notSignerAddress = accounts[5];
+        const notSignerAddress = accounts[5];
         await management.setPermission(accounts[4], 1, true);
-        let prevSenderBalance = await Utils.getEtherBalance(accounts[0]);
-        let prevPlatformHolderBalance = await Utils.getEtherBalance(platformHolder);
-        let txCost;
         await makeTransactionKYC(
             royalty,
             web3.toWei(0.005, 'ether'),
@@ -184,7 +173,7 @@ contract('Royalty', function (accounts) {
             accounts[0]
         )
             .then(Utils.receiptShouldFailed)
-            .catch(Utils.catchReceiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
     });
 
     it('transaction should failed if contributor  sends less/more than enough', async function () {
@@ -194,12 +183,8 @@ contract('Royalty', function (accounts) {
 
         await management.setPermission(assetPurchase.address, 0, true);
         await management.setPermission(royalty.address, 0, true);
-        let signerAddress = accounts[4];
-        let notSignerAddress = accounts[4];
+        const signerAddress = accounts[4];
         await management.setPermission(accounts[4], 1, true);
-        let prevSenderBalance = await Utils.getEtherBalance(accounts[0]);
-        let prevPlatformHolderBalance = await Utils.getEtherBalance(platformHolder);
-        let txCost;
         await makeTransactionKYC(
             royalty,
             web3.toWei(0.005, 'ether'),
@@ -210,7 +195,7 @@ contract('Royalty', function (accounts) {
             accounts[0]
         )
             .then(Utils.receiptShouldFailed)
-            .catch(Utils.catchReceiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
         await makeTransactionKYC(
             royalty,
             web3.toWei(0.005, 'ether'),
@@ -221,7 +206,7 @@ contract('Royalty', function (accounts) {
             accounts[0]
         )
             .then(Utils.receiptShouldFailed)
-            .catch(Utils.catchReceiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
     });
 
     it('check set management function', async function () {
@@ -270,7 +255,7 @@ contract('Royalty', function (accounts) {
             3600,
             'ExpirationPeriod is not equal'
         );
-        await management.setTransactionDataExpirationPeriod(0,{from: accounts[8]})
+        await management.setTransactionDataExpirationPeriod(0, { from: accounts[8] })
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
         assert.equal(
@@ -304,7 +289,7 @@ contract('Royalty', function (accounts) {
             web3.toWei(0.005, 'ether'),
             'assetRegistrationPrice is not equal'
         );
-        await management.setAssetRegistrationPrice(0,{from: accounts[8]})
+        await management.setAssetRegistrationPrice(0, { from: accounts[8] })
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
 
@@ -316,17 +301,16 @@ contract('Royalty', function (accounts) {
             'assetRegistrationPrice is not equal'
         );
 
-
         assert.equal(
             await management.platformHolderAddress.call(),
             accounts[8],
             'platformHolderAddress is not equal'
         );
-        await management.updatePlatformHolderAddress(0x0,{from: accounts[0]})
+        await management.updatePlatformHolderAddress(0x0, { from: accounts[0] })
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
 
-        await management.updatePlatformHolderAddress(accounts[7],{from: accounts[8]})
+        await management.updatePlatformHolderAddress(accounts[7], { from: accounts[8] })
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
 
@@ -343,15 +327,15 @@ contract('Royalty', function (accounts) {
             10,
             'platformPercentsRevenue is not equal'
         );
-        await management.updatePlatformPercentsRevenue(112,100,{from: accounts[0]})
+        await management.updatePlatformPercentsRevenue(112, 100, { from: accounts[0] })
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
 
-        await management.updatePlatformPercentsRevenue(12,1000,{from: accounts[8]})
+        await management.updatePlatformPercentsRevenue(12, 1000, { from: accounts[8] })
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
 
-        await management.updatePlatformPercentsRevenue(12,1000)
+        await management.updatePlatformPercentsRevenue(12, 1000)
             .then(Utils.receiptShouldSucceed);
         assert.equal(
             await management.platformRevenueInPercents.call(),

@@ -9,3 +9,4 @@ reports
 coverage.json
 build
 bridge.log
+coverageEnv

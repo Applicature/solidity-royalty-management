@@ -1,8 +1,8 @@
 pragma solidity 0.4.24;
 
-import 'openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol';
-import './Managed.sol';
-import './Cashier.sol';
+import "openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
+import "./Managed.sol";
+import "./Cashier.sol";
 
 contract Royalty is ERC721Token, Managed {
 
@@ -22,7 +22,7 @@ contract Royalty is ERC721Token, Managed {
 
     constructor(address _management)
         public
-        ERC721Token('Royalty', 'ROYALTY')
+        ERC721Token("Royalty", "ROYALTY")
         Managed(_management)
     {}
 
@@ -141,7 +141,7 @@ contract Royalty is ERC721Token, Managed {
             )
         );
 
-        bytes memory prefix = '\x19Ethereum Signed Message:\n32';
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
 
         return ecrecover(
             keccak256(abi.encodePacked(prefix, hash)),
@@ -165,7 +165,9 @@ contract Royalty is ERC721Token, Managed {
             ERROR_ACCESS_DENIED
         );
 
-        Cashier cashier = Cashier(management.contractRegistry(CONTRACT_CASHIER));
+        Cashier cashier = Cashier(
+            management.contractRegistry(CONTRACT_CASHIER)
+        );
         cashier.forwardEthersToHolder.value(msg.value)();
 
         digitalAssetId = allTokens.length;

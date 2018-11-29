@@ -1,8 +1,8 @@
 pragma solidity 0.4.24;
 
-import './Managed.sol';
-import './Royalty.sol';
-import './Cashier.sol';
+import "./Managed.sol";
+import "./Royalty.sol";
+import "./Cashier.sol";
 
 
 contract AssetPurchase is Managed {
@@ -33,7 +33,9 @@ contract AssetPurchase is Managed {
         );
         require(royaltyContract.exists(_digitalAssetId), ERROR_NOT_AVAILABLE);
 
-        Cashier cashier = Cashier(management.contractRegistry(CONTRACT_CASHIER));
+        Cashier cashier = Cashier(
+            management.contractRegistry(CONTRACT_CASHIER)
+        );
         cashier.recordPurchase.value(msg.value)(_digitalAssetId);
 
         emit AssetUsagePurchased(

@@ -7,7 +7,7 @@
     "indent": ["warn", 4],
     "compiler-fixed": false,
     "not-rely-on-time": false,
-    "quotes": ["error", "single"],
+    "quotes": ["error", "double"],
     "no-empty-blocks": false,
     "no-complex-fallback": false,
     "two-lines-top-level-separator": false,

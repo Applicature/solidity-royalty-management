@@ -10,16 +10,14 @@ pipelines:
       - node
       script:
       - npm install
-      - npm run solium
-      - npm run solhint
-#     - npm run test:ci
-#  - step:
-#      name: Generate Coverage
-#      trigger: manual
-#      caches:
-#      - node
-#      script:
-#      - npm run coverage
+      - npm run test:ci
+  - step:
+      name: Generate Coverage
+      trigger: manual
+      caches:
+      - node
+      script:
+      - npm run coverage
   branches:
     master:
     - step:
@@ -29,10 +27,8 @@ pipelines:
         - node
         script:
         - npm install
-        - npm run solium
-        - npm run solhint
-#       - npm run test:ci
-#        - npm run coverage
+        - npm run test:ci
+        - npm run coverage
     - step:
         name: Deploy to TestNet
         trigger: manual
