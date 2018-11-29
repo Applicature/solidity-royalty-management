@@ -56,12 +56,14 @@ contract Royalty is ERC721Token, Managed {
             hasPermission(recoveredAddress, CAN_SIGN_TRANSACTION),
             ERROR_ACCESS_DENIED
         );
-        require(
-            block.timestamp <= _dataGenerationTimestamp.add(
-            Management(management).transactionDataExpirationPeriod()
-        ),
-            ERROR_NOT_AVAILABLE
-        );
+        if (Management(management).transactionDataExpirationPeriod() > 0) {
+            require(
+                block.timestamp <= _dataGenerationTimestamp.add(
+                Management(management).transactionDataExpirationPeriod()
+            ),
+                ERROR_NOT_AVAILABLE
+            );
+        }
         uint256 digitalAssetId = createDigitalAssetInternal(
             msg.sender,
             _priceInEthers,
@@ -76,48 +78,36 @@ contract Royalty is ERC721Token, Managed {
         );
     }
 
-    function approve(address _to, uint256 _tokenId) public {
-        _to = _to;
-        _tokenId = _tokenId;
+    function approve(address, uint256) public {
         require(false, ERROR_ACCESS_DENIED);
     }
 
     function transferFrom(
-        address _from,
-        address _to,
-        uint256 _tokenId
+        address,
+        address,
+        uint256
     )
         public
     {
-        _from = _from;
-        _to = _to;
-        _tokenId = _tokenId;
         require(false, ERROR_ACCESS_DENIED);
     }
 
     function safeTransferFrom(
-        address _from,
-        address _to,
-        uint256 _tokenId
+        address,
+        address,
+        uint256
     )
         public
     {
-        _from = _from;
-        _to = _to;
-        _tokenId = _tokenId;
         require(false, ERROR_ACCESS_DENIED);
     }
 
     function safeTransferFrom(
-        address _from,
-        address _to,
-        uint256 _tokenId,
-        bytes _data
+        address,
+        address,
+        uint256,
+        bytes
     ) public {
-        _from = _from;
-        _to = _to;
-        _tokenId = _tokenId;
-        _data = _data;
         require(false, ERROR_ACCESS_DENIED);
     }
 
@@ -151,7 +141,7 @@ contract Royalty is ERC721Token, Managed {
             )
         );
 
-        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+        bytes memory prefix = '\x19Ethereum Signed Message:\n32';
 
         return ecrecover(
             keccak256(abi.encodePacked(prefix, hash)),

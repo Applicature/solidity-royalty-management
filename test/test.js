@@ -20,7 +20,7 @@ contract('Royalty', function (accounts) {
         royalty,
         assetPurchase;
 
-    function makeTransactionKYC (
+    function makeTransactionKYC(
         instance,
         priceInEthers,
         uri,
@@ -91,7 +91,7 @@ contract('Royalty', function (accounts) {
         let prevSenderBalance = await Utils.getEtherBalance(accounts[0]);
         let prevPlatformHolderBalance = await Utils.getEtherBalance(platformHolder);
         let txCost;
-      await  makeTransactionKYC (
+        await makeTransactionKYC(
             royalty,
             web3.toWei(0.005, 'ether'),
             'fghjsdfgh',
@@ -100,19 +100,25 @@ contract('Royalty', function (accounts) {
             web3.toWei(0.005, 'ether'),
             accounts[0],
         )
-          .then((result)=> Utils.getTxCost(result))
-          .then((result) => txCost = result );
+            .then((result) => Utils.getTxCost(result))
+            .then((result) => txCost = result);
         let afterSenderBalance = await Utils.getEtherBalance(accounts[0]);
         let afterPlatformHolderBalance = await Utils.getEtherBalance(platformHolder);
-        await Utils.checkState({ royalty }, {
+        await Utils.checkState({royalty}, {
             royalty: {
                 name: 'Royalty',
                 totalSupply: 1,
-                tokenURI :[
+                tokenURI: [
                     {[0]: 'fghjsdfgh'},
                 ]
             },
         });
+
+        assert.equal(
+            await royalty.getEtherPriceForAsset.call(0),
+            web3.toWei(0.005, 'ether'),
+            'getEtherPriceForAsset is not equal'
+        );
         await Utils.checkEtherBalance(
             accounts[0],
             new BigNumber(prevSenderBalance).sub(txCost).sub(
@@ -126,7 +132,7 @@ contract('Royalty', function (accounts) {
             )
         )
 
-        const { logs } =   await assetPurchase.purchaseDigitalAsset(
+        const {logs} = await assetPurchase.purchaseDigitalAsset(
             0,
             {
                 value: web3.toWei(0.005, 'ether')
@@ -155,4 +161,207 @@ contract('Royalty', function (accounts) {
         );
     });
 
+    it('transaction should failed if it isn\'t signed', async function () {
+        await management.registerContract(1, cashier.address);
+        await management.registerContract(2, royalty.address);
+        await management.registerContract(3, assetPurchase.address);
+
+        await management.setPermission(assetPurchase.address, 0, true);
+        await management.setPermission(royalty.address, 0, true);
+        let signerAddress = accounts[4];
+        let notSignerAddress = accounts[5];
+        await management.setPermission(accounts[4], 1, true);
+        let prevSenderBalance = await Utils.getEtherBalance(accounts[0]);
+        let prevPlatformHolderBalance = await Utils.getEtherBalance(platformHolder);
+        let txCost;
+        await makeTransactionKYC(
+            royalty,
+            web3.toWei(0.005, 'ether'),
+            'fghjsdfgh',
+            parseInt(new Date().getTime() / 1000),
+            notSignerAddress,
+            web3.toWei(0.005, 'ether'),
+            accounts[0]
+        )
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed)
+    });
+
+    it('transaction should failed if contributor  sends less/more than enough', async function () {
+        await management.registerContract(1, cashier.address);
+        await management.registerContract(2, royalty.address);
+        await management.registerContract(3, assetPurchase.address);
+
+        await management.setPermission(assetPurchase.address, 0, true);
+        await management.setPermission(royalty.address, 0, true);
+        let signerAddress = accounts[4];
+        let notSignerAddress = accounts[4];
+        await management.setPermission(accounts[4], 1, true);
+        let prevSenderBalance = await Utils.getEtherBalance(accounts[0]);
+        let prevPlatformHolderBalance = await Utils.getEtherBalance(platformHolder);
+        let txCost;
+        await makeTransactionKYC(
+            royalty,
+            web3.toWei(0.005, 'ether'),
+            'fghjsdfgh',
+            parseInt(new Date().getTime() / 1000),
+            signerAddress,
+            web3.toWei(0.0049, 'ether'),
+            accounts[0]
+        )
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed)
+        await makeTransactionKYC(
+            royalty,
+            web3.toWei(0.005, 'ether'),
+            'fghjsdfgh',
+            parseInt(new Date().getTime() / 1000),
+            signerAddress,
+            web3.toWei(0.0051, 'ether'),
+            accounts[0]
+        )
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed)
+    });
+
+    it('check set management function', async function () {
+        await management.registerContract(1, cashier.address);
+        await management.registerContract(2, royalty.address);
+        await management.registerContract(3, assetPurchase.address);
+
+        await management.setPermission(assetPurchase.address, 0, true);
+        await management.setPermission(royalty.address, 0, true);
+        assert.equal(
+            await royalty.management.call(),
+            management.address,
+            'management is not equal'
+        );
+        await royalty.setManagementContract(0x0)
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+        assert.equal(
+            await royalty.management.call(),
+            management.address,
+            'management is not equal'
+        );
+        const managementNew = management = await Management.new(
+            platformHolder,
+            platformRevenueInPercents,
+            percentAbsMax
+        );
+        await royalty.setManagementContract(managementNew.address)
+            .then(Utils.receiptShouldSucceed);
+        assert.equal(
+            await royalty.management.call(),
+            managementNew.address,
+            'management is not equal'
+        );
+    });
+
+    it('check setTransactionDataExpirationPeriod function', async function () {
+        await management.registerContract(1, cashier.address);
+        await management.registerContract(2, royalty.address);
+        await management.registerContract(3, assetPurchase.address);
+
+        await management.setPermission(assetPurchase.address, 0, true);
+        await management.setPermission(royalty.address, 0, true);
+        assert.equal(
+            await management.transactionDataExpirationPeriod.call(),
+            3600,
+            'ExpirationPeriod is not equal'
+        );
+        await management.setTransactionDataExpirationPeriod(0,{from: accounts[8]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+        assert.equal(
+            await management.transactionDataExpirationPeriod.call(),
+            3600,
+            'ExpirationPeriod is not equal'
+        );
+        await management.setTransactionDataExpirationPeriod(5000)
+            .then(Utils.receiptShouldSucceed);
+        assert.equal(
+            await management.transactionDataExpirationPeriod.call(),
+            5000,
+            'ExpirationPeriod is not equal'
+        );
+    });
+
+    it('check ' +
+        'setAssetRegistrationPrice' +
+        'updatePlatformHolderAddress' +
+        'updatePlatformPercentsRevenue' +
+        ' functions', async function () {
+        await management.registerContract(1, cashier.address);
+        await management.registerContract(2, royalty.address);
+        await management.registerContract(3, assetPurchase.address);
+
+        await management.setPermission(assetPurchase.address, 0, true);
+        await management.setPermission(royalty.address, 0, true);
+
+        assert.equal(
+            await management.assetRegistrationPrice.call(),
+            web3.toWei(0.005, 'ether'),
+            'assetRegistrationPrice is not equal'
+        );
+        await management.setAssetRegistrationPrice(0,{from: accounts[8]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await management.setAssetRegistrationPrice(0)
+            .then(Utils.receiptShouldSucceed);
+        assert.equal(
+            await management.assetRegistrationPrice.call(),
+            0,
+            'assetRegistrationPrice is not equal'
+        );
+
+
+        assert.equal(
+            await management.platformHolderAddress.call(),
+            accounts[8],
+            'platformHolderAddress is not equal'
+        );
+        await management.updatePlatformHolderAddress(0x0,{from: accounts[0]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await management.updatePlatformHolderAddress(accounts[7],{from: accounts[8]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await management.updatePlatformHolderAddress(accounts[7])
+            .then(Utils.receiptShouldSucceed);
+        assert.equal(
+            await management.platformHolderAddress.call(),
+            accounts[7],
+            'platformHolderAddress is not equal'
+        );
+
+        assert.equal(
+            await management.platformRevenueInPercents.call().valueOf(),
+            10,
+            'platformPercentsRevenue is not equal'
+        );
+        await management.updatePlatformPercentsRevenue(112,100,{from: accounts[0]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await management.updatePlatformPercentsRevenue(12,1000,{from: accounts[8]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await management.updatePlatformPercentsRevenue(12,1000)
+            .then(Utils.receiptShouldSucceed);
+        assert.equal(
+            await management.platformRevenueInPercents.call(),
+            12,
+            'platformPercentsRevenue is not equal'
+        );
+        assert.equal(
+            await management.percentAbsMax.call(),
+            1000,
+            'percentAbsMax is not equal'
+        );
+    });
 });

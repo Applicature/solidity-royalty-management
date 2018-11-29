@@ -16,4 +16,5 @@ contract Constants {
     string public constant ERROR_WRONG_AMOUNT = 'ERROR_WRONG_AMOUNT';
     string public constant ERROR_NO_CONTRACT = 'ERROR_NO_CONTRACT';
     string public constant ERROR_NOT_AVAILABLE = 'ERROR_NOT_AVAILABLE';
+    string public constant ERROR_ZERO_ADDRESS_NOT_ALLOWED = 'ERROR_ZERO_ADDRESS_NOT_ALLOWED';
 }

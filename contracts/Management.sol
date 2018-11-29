@@ -28,7 +28,7 @@ contract Management is Ownable, Constants {
     )
         public
     {
-        require(_platformHolderAddress != address(0), ERROR_ACCESS_DENIED);
+        require(_platformHolderAddress != address(0), ERROR_ZERO_ADDRESS_NOT_ALLOWED);
         require(isContract(_platformHolderAddress) == false, ERROR_ACCESS_DENIED);
         platformHolderAddress = _platformHolderAddress;
         platformRevenueInPercents = _platformRevenueInPercents;
@@ -60,10 +60,14 @@ contract Management is Ownable, Constants {
         assetRegistrationPrice = _newAssetRegistrationPrice;
     }
 
-    function updateplatformHolderAddressAddress(address _newAddress)
+    function updatePlatformHolderAddress(address _newAddress)
         public
         onlyOwner
     {
+        require(
+            _newAddress != address(0),
+            ERROR_ZERO_ADDRESS_NOT_ALLOWED
+        );
         platformHolderAddress = _newAddress;
     }
 
@@ -75,9 +79,12 @@ contract Management is Ownable, Constants {
         onlyOwner
     {
         require(
+            _platformRevenueInPercents < _percentAbsMax,
+            ERROR_WRONG_AMOUNT
+        );
+        require(
             _percentAbsMax >= 100 &&
-            _percentAbsMax % 100 == 0 &&
-        _platformRevenueInPercents < _percentAbsMax,
+            _percentAbsMax % 100 == 0,
             ERROR_WRONG_AMOUNT
         );
         platformRevenueInPercents = _platformRevenueInPercents;
@@ -97,7 +104,6 @@ contract Management is Ownable, Constants {
         );
         transactionDataExpirationPeriod = _transactionDataExpirationPeriod;
     }
-
 
     function isContract(address _addr) public view returns (bool) {
         uint32 size;
