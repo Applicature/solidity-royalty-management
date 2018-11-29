@@ -6,24 +6,7 @@ import './Royalty.sol';
 
 contract Cashier is Managed {
 
-    address public platformHolder;
-    uint256 public platformRevenueInPercents;
-    uint256 public percentAbsMax;
-
-    constructor(
-        address _management,
-        address _platformHolder,
-        uint256 _platformRevenueInPercents,
-        uint256 _percentAbsMax
-    )
-        public Managed(_management)
-    {
-        require(_platformHolder != address(0), ERROR_ACCESS_DENIED);
-        require(isContract(_platformHolder) == false, ERROR_ACCESS_DENIED);
-        platformHolder = _platformHolder;
-        platformRevenueInPercents = _platformRevenueInPercents;
-        percentAbsMax = _percentAbsMax;
-    }
+    constructor(address _management) public Managed(_management){}
 
     function recordPurchase(
         uint256 _digitalAssetId
@@ -31,37 +14,29 @@ contract Cashier is Managed {
         public
         payable
         requirePermission(CAN_RECORD_PURCHASE)
+        requireContractExistsInRegistry(CONTRACT_ROYALTY)
+        canCallOnlyRegisteredContract(CONTRACT_ASSET_PURCHASE)
+    {
+        Management managementContract = Management(management);
+        uint256 platformProfit = msg.value
+            .mul(managementContract.platformRevenueInPercents())
+            .div(managementContract.percentAbsMax());
+        managementContract.platformHolderAddress().transfer(platformProfit);
+        Royalty royalty = Royalty(
+            managementContract.contractRegistry(CONTRACT_ROYALTY)
+        );
+        royalty.ownerOf(_digitalAssetId).transfer(msg.value.sub(platformProfit));
+    }
+
+    function forwardEthersToHolder()
+        public
+        payable
+        requirePermission(CAN_RECORD_PURCHASE)
+        requireContractExistsInRegistry(CONTRACT_ROYALTY)
         canCallOnlyRegisteredContract(CONTRACT_ROYALTY)
-        returns (uint256)
     {
-        platformHolder.transfer(
-            msg.value
-            .mul(platformRevenueInPercents)
-            .div(percentAbsMax)
-        );
-        Royalty royalty = Royalty(management.contractRegistry(CONTRACT_ROYALTY));
-        royalty.ownerOf(_digitalAssetId).transfer(msg.value);
-    }
-
-    function updatePlatformHolderAddress(address _newAddress)
-        public
-        onlyOwner
-    {
-        platformHolder = _newAddress;
-    }
-
-    function updatePlatformPercentsRevenue(
-        uint256 _platformRevenueInPercents,
-        uint256 _percentAbsMax
-    )
-        public
-        onlyOwner
-    {
-        require(
-            _platformRevenueInPercents < _percentAbsMax,
-            ERROR_WRONG_AMOUNT
-        );
-        platformRevenueInPercents = _platformRevenueInPercents;
-        percentAbsMax = _percentAbsMax;
+        if (msg.value > 0) {
+            Management(management).platformHolderAddress().transfer(msg.value);
+        }
     }
 }

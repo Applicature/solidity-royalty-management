@@ -28,7 +28,7 @@ contract Managed is Ownable, Constants {
     }
 
     modifier requireNotContractSender() {
-        require(isContract(msg.sender) == false, ERROR_ACCESS_DENIED);
+        require(management.isContract(msg.sender) == false, ERROR_ACCESS_DENIED);
         _;
     }
 
@@ -44,13 +44,5 @@ contract Managed is Ownable, Constants {
 
     function hasPermission(address _subject, uint256 _permissionBit) internal view returns (bool) {
         return management.permissions(_subject, _permissionBit);
-    }
-
-    function isContract(address _addr) internal view returns (bool) {
-        uint32 size;
-        assembly {
-            size := extcodesize(_addr)
-        }
-        return (size > 0);
     }
 }

@@ -10,6 +10,7 @@ contract AssetPurchase is Managed {
     event AssetUsagePurchased(
         uint256 indexed digitalAssetId,
         address indexed buyer,
+        uint256 amount,
         uint256 purchasingTimestamp
     );
 
@@ -38,6 +39,7 @@ contract AssetPurchase is Managed {
         emit AssetUsagePurchased(
             _digitalAssetId,
             msg.sender,
+            msg.value,
             block.timestamp
         );
     }

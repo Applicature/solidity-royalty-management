@@ -5,7 +5,7 @@ contract Constants {
 
     // Permissions bit constants
     uint256 public constant CAN_RECORD_PURCHASE = 0;
-    uint256 public constant CAN_RECORD_RESULT = 1;
+    uint256 public constant CAN_SIGN_TRANSACTION = 1;
 
     // Contract Registry keys
     uint256 public constant CONTRACT_CASHIER = 1;
