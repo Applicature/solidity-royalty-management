@@ -3,8 +3,10 @@ pragma solidity 0.4.24;
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 import "./Managed.sol";
 import "./Cashier.sol";
+import "./interfaces/IRoyalty.sol";
 
-contract Royalty is ERC721Token, Managed {
+
+contract Royalty is ERC721Token, Managed, IRoyalty {
 
     DigitalAsset[] public digitalAssets;
 

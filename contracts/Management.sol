@@ -2,8 +2,10 @@ pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./Constants.sol";
+import "./interfaces/IManagement.sol";
 
-contract Management is Ownable, Constants {
+
+contract Management is Ownable, Constants, IManagement {
 
     // Contract Registry
     mapping(uint256 => address) public contractRegistry;

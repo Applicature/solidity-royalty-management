@@ -2,9 +2,10 @@ pragma solidity 0.4.24;
 
 import "./Managed.sol";
 import "./Royalty.sol";
+import "./interfaces/ICashier.sol";
 
 
-contract Cashier is Managed {
+contract Cashier is Managed, ICashier {
 
     constructor(address _management) public Managed(_management){}
 

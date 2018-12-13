@@ -4,9 +4,10 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./Constants.sol";
 import "./Management.sol";
+import "./interfaces/IManaged.sol";
 
 
-contract Managed is Ownable, Constants {
+contract Managed is Ownable, Constants, IManaged {
 
     using SafeMath for uint256;
 

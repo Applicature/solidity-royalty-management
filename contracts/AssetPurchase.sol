@@ -3,9 +3,10 @@ pragma solidity 0.4.24;
 import "./Managed.sol";
 import "./Royalty.sol";
 import "./Cashier.sol";
+import "./interfaces/IAssetPurchase.sol";
 
 
-contract AssetPurchase is Managed {
+contract AssetPurchase is IAssetPurchase, Managed {
 
     event AssetUsagePurchased(
         uint256 indexed digitalAssetId,
