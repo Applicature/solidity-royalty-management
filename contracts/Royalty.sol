@@ -10,7 +10,7 @@ contract Royalty is ERC721Token, Managed {
 
     struct DigitalAsset {
         uint256 priceInEthers;
-
+        uint256 registeredAt;
     }
 
     event DigitalAssetRegistered(
@@ -173,6 +173,6 @@ contract Royalty is ERC721Token, Managed {
         digitalAssetId = allTokens.length;
         _mint(_tokenOwner, digitalAssetId);
         _setTokenURI(digitalAssetId, _uri);
-        digitalAssets.push(DigitalAsset(_priceInEthers));
+        digitalAssets.push(DigitalAsset(_priceInEthers, block.timestamp));
     }
 }
