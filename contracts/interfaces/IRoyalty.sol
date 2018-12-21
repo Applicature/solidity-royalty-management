@@ -1,6 +1,9 @@
 pragma solidity ^0.4.24;
 
-contract IRoyalty {
+import "openzeppelin-solidity/contracts/token/ERC721/ERC721BasicToken.sol";
+
+
+contract IRoyalty is ERC721BasicToken {
 
     /**
        * @dev to create and pay fee for digitalAssets
@@ -16,8 +19,8 @@ contract IRoyalty {
         bytes32 _r,
         bytes32 _s
     )
-    public
-    payable;
+        public
+        payable;
 
     /**
       * @dev to get the license price

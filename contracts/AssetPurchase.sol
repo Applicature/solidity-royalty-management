@@ -1,8 +1,8 @@
 pragma solidity 0.4.24;
 
 import "./Managed.sol";
-import "./Royalty.sol";
-import "./Cashier.sol";
+import "./interfaces/IRoyalty.sol";
+import "./interfaces/ICashier.sol";
 import "./interfaces/IAssetPurchase.sol";
 
 
@@ -25,7 +25,7 @@ contract AssetPurchase is IAssetPurchase, Managed {
         payable
         requireContractExistsInRegistry(CONTRACT_CASHIER)
     {
-        Royalty royaltyContract = Royalty(
+        IRoyalty royaltyContract = IRoyalty(
             management.contractRegistry(CONTRACT_ROYALTY)
         );
         require(
@@ -34,7 +34,7 @@ contract AssetPurchase is IAssetPurchase, Managed {
         );
         require(royaltyContract.exists(_digitalAssetId), ERROR_NOT_AVAILABLE);
 
-        Cashier cashier = Cashier(
+        ICashier cashier = ICashier(
             management.contractRegistry(CONTRACT_CASHIER)
         );
         cashier.recordPurchase.value(msg.value)(_digitalAssetId);

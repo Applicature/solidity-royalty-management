@@ -66,4 +66,29 @@ contract IManagement {
     */
     function isContract(address _address) public view returns (bool);
 
+    /**
+       * @dev returns max absolute percent value
+   */
+    function percentAbsMax() public view returns (uint256);
+
+    /**
+      * @dev returns platform revenue in percents per each license purchase
+    */
+    function platformRevenueInPercents() public view returns (uint256);
+
+    /**
+      * @dev returns platform holder address
+    */
+    function platformHolderAddress() public view returns (address);
+
+    function contractRegistry(uint256 _contractId) public view returns (address);
+
+    function assetRegistrationPrice() public view returns (uint256);
+
+    function transactionDataExpirationPeriod() public view returns (uint256);
+
+    function permissions(address _subject, uint256 _permissionBit)
+        public
+        view
+        returns (bool);
 }

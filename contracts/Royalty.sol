@@ -2,7 +2,7 @@ pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 import "./Managed.sol";
-import "./Cashier.sol";
+import "./interfaces/ICashier.sol";
 import "./interfaces/IRoyalty.sol";
 
 
@@ -41,7 +41,7 @@ contract Royalty is ERC721Token, Managed, IRoyalty {
         requireNotContractSender()
     {
         require(
-            msg.value == Management(management).assetRegistrationPrice(),
+            msg.value == IManagement(management).assetRegistrationPrice(),
             ERROR_WRONG_AMOUNT
         );
 
@@ -58,10 +58,10 @@ contract Royalty is ERC721Token, Managed, IRoyalty {
             hasPermission(recoveredAddress, CAN_SIGN_TRANSACTION),
             ERROR_ACCESS_DENIED
         );
-        if (Management(management).transactionDataExpirationPeriod() > 0) {
+        if (IManagement(management).transactionDataExpirationPeriod() > 0) {
             require(
                 block.timestamp <= _dataGenerationTimestamp.add(
-                Management(management).transactionDataExpirationPeriod()
+                IManagement(management).transactionDataExpirationPeriod()
             ),
                 ERROR_NOT_AVAILABLE
             );
@@ -167,7 +167,7 @@ contract Royalty is ERC721Token, Managed, IRoyalty {
             ERROR_ACCESS_DENIED
         );
 
-        Cashier cashier = Cashier(
+        ICashier cashier = ICashier(
             management.contractRegistry(CONTRACT_CASHIER)
         );
         cashier.forwardEthersToHolder.value(msg.value)();

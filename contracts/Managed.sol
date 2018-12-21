@@ -3,7 +3,7 @@ pragma solidity 0.4.24;
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./Constants.sol";
-import "./Management.sol";
+import "./interfaces/IManagement.sol";
 import "./interfaces/IManaged.sol";
 
 
@@ -11,7 +11,7 @@ contract Managed is Ownable, Constants, IManaged {
 
     using SafeMath for uint256;
 
-    Management public management;
+    IManagement public management;
 
     modifier requirePermission(uint256 _permissionBit) {
         require(
@@ -46,7 +46,7 @@ contract Managed is Ownable, Constants, IManaged {
     }
 
     constructor(address _managementAddress) public {
-        management = Management(_managementAddress);
+        management = IManagement(_managementAddress);
     }
 
     function setManagementContract(address _management)
@@ -55,7 +55,7 @@ contract Managed is Ownable, Constants, IManaged {
     {
         require(address(0) != _management, ERROR_ACCESS_DENIED);
 
-        management = Management(_management);
+        management = IManagement(_management);
     }
 
     function hasPermission(address _subject, uint256 _permissionBit)
