@@ -137,7 +137,9 @@ contract Management is Ownable, Constants, IManagement {
         return platformHolderAddress_;
     }
 
-    function contractRegistry(uint256 _contractId) public view returns (address) {
+    function contractRegistry(uint256 _contractId)
+        public view returns (address)
+    {
         return contractRegistry_[_contractId];
     }
 

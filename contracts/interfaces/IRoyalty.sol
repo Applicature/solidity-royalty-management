@@ -19,8 +19,7 @@ contract IRoyalty is ERC721BasicToken {
         bytes32 _r,
         bytes32 _s
     )
-        public
-        payable;
+    public payable;
 
     /**
       * @dev to get the license price

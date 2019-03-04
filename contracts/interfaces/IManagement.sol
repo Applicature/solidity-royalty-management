@@ -81,7 +81,8 @@ contract IManagement {
     */
     function platformHolderAddress() public view returns (address);
 
-    function contractRegistry(uint256 _contractId) public view returns (address);
+    function contractRegistry(uint256 _contractId)
+        public view returns (address);
 
     function assetRegistrationPrice() public view returns (uint256);
 
